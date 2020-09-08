@@ -28,8 +28,7 @@ function onRequest(request, response) {
             language: 'KR'
         });
         
-        // 896252255:AAGU_ctxRPHoa3G_Oert32je-WVggnS-UIE
-            // RSS item iterator
+        // RSS item iterator
         $('.news_list li').each(function(post){
             let author = $(this).find('div dl dd[class=name] span').first().text();
             if(author.indexOf('양한나') != -1){
