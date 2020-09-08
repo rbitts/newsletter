@@ -1,2 +1,8 @@
 # node modules
 node_modules/
+
+# Logger files
+log.log*
+
+# trash json
+.*.json
