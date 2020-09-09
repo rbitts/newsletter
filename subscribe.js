@@ -39,21 +39,33 @@ const sendMessage = (text, callback) => {
 };
 
 let subscribe = setInterval(() => {
-    (async () => {
-        let feed = await parser.parseURL('http://sedaily.rbits.duckdns.org');
-        feed.items.forEach(item => {
-            model.getByUrl(item.link).then(v => {
-                // 새로 입력되는 피드가 있을 시 db 입력 및 텔레그램 공지 
-                if (!v) {
-                    model.add(item.link, JSON.stringify(item));
-                    let message = item.title + '\n' + item.link;
-                    sendMessage(message, (error) => {
-                        if (error) {
-                            logger.error(`send error: ${error}`);
-                        }
-                    });
-                }
+    
+    parser.parseURL('http://sedaily.rbits.duckdns.org', function(err, feed){
+        if(err){
+            logger.error('[ ] RSS Feed parser error');
+            logger.error(err);
+            return ;
+        }
+
+        if(feed.items.length > 0){
+            feed.items.forEach(item => {
+                model.getByUrl(item.link).then(v => {
+                    // 새로 입력되는 피드가 있을 시 db 입력 및 텔레그램 공지 
+                    if (!v) {
+                        model.add(item.link, JSON.stringify(item));
+                        let message = item.title + '\n' + item.link;
+                        sendMessage(message, (error) => {
+                            if (error) {
+                                logger.error(`send error: ${error}`);
+                            }
+                        });
+                    }
+                });
             });
-        });
-    })();
+        } else {
+            // logger.debug('[ ] 피드없음.')
+        }
+        
+    });
+
 }, INTERVAL);
