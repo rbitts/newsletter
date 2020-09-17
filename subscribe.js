@@ -1,12 +1,16 @@
 var logger = require('./logger');
 var request = require('request');
 var Parser = require('rss-parser'); // RSS 파서 
+var moment = require('moment');
+require('moment-timezone');
+moment.tz.setDefault("Asia/Seoul");
+
 var parser = new Parser();
 
 const fs = require('fs');
 
 const DB_PATH = './feed.db';        // 피드를 저장할 DB 파일명
-const INTERVAL = 5 * 1000;          // 5초에 한번씩 실행 
+const INTERVAL = 3 * 1000;          // 5초에 한번씩 실행 
 
 // 하루 단위로 디비를 삭제하기 위해서 실행시 삭제 crontab에 restart 등록 
 //try {
@@ -40,6 +44,12 @@ const sendMessage = (text, callback) => {
 
 let subscribe = setInterval(() => {
     
+    ;
+    console.log(moment().hour());
+    let hour = moment().hour();
+    // 7~6시까지만 동작
+    if( hour < 7 || hour > 18) return;
+
     parser.parseURL('http://sedaily.rbits.duckdns.org', function(err, feed){
         if(err){
             logger.error('[ ] RSS Feed parser error');
